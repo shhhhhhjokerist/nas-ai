@@ -6,12 +6,28 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     port: 3000,
+    host: '0.0.0.0',
     open: true,
     proxy: {
       '/auth': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
-        rewrite: (path) => path  // 保持路径不变
+        rewrite: (path) => path
+      },
+      '/media': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        rewrite: (path) => path
+      },
+      '/agent': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        rewrite: (path) => path
+      },
+      '/scan': {
+        target: 'http://localhost:8000',  
+        changeOrigin: true,
+        rewrite: (path) => path
       }
     }
   }

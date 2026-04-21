@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.services.scanner import FileScanner, scan_directory
+from app.services.scanner import FileScanner
 from app.config import Config
 from sqlalchemy.orm import Session
 
@@ -9,17 +9,20 @@ router = APIRouter(prefix="/scan", tags=["scan"])
 
 @router.post("/")
 async def scan(session: Session = Depends(get_db)):
-    fileScanner = FileScanner(session)
-    files = fileScanner.scan_directory(Config.MEDIA_DIR)
+    fileScanner = FileScanner(Config.MEDIA_DIR, session)
+    result = fileScanner.scan_and_sync()
     return {
         "msg": "scan_complete",
-        "new_files": len(files)
+        "scanned": result["scanned"],
+        "deleted": result["deleted"],
     }
 
 @router.get("/")
 async def scan(session: Session = Depends(get_db)):
-    files = scan_directory(Config.MEDIA_DIR, session)
+    fileScanner = FileScanner(Config.MEDIA_DIR, session)
+    result = fileScanner.scan_and_sync()
     return {
         "msg": "scan_complete",
-        "new_files": len(files)
+        "scanned": result["scanned"],
+        "deleted": result["deleted"],
     }

@@ -42,6 +42,7 @@ class FileScanner:
     
     def _scan_directory(self, current_path, parent_node, current_paths_set):
         """递归扫描目录"""
+        current_path = Path(current_path)
         try:
             for item in current_path.iterdir():
                 # 跳过隐藏文件
@@ -54,12 +55,11 @@ class FileScanner:
                 # 查询节点是否存在
                 stmt = select(FileNode).where(FileNode.abs_path == abs_path)
                 node = self.session.execute(stmt).scalar_one_or_none()
-                
                 if node:
                     # 更新现有节点
                     node.name = item.name
                     node.size = item.stat().st_size if item.is_file() else 0
-                    node.updated_at = datetime.datetime.now(datetime.timezone.utc)
+                    node.update_at = datetime.datetime.now(datetime.timezone.utc)
                 else:
                     # 创建新节点
                     node = FileNode(
@@ -85,6 +85,10 @@ class FileScanner:
                     
                     self.session.add(node)
                     self.session.flush()  # 获取 ID
+
+                # stmt = select(FileNode).where(FileNode.abs_path == abs_path)
+                # node = self.session.execute(stmt).scalar_one_or_none()
+                # print(node.name)
 
                 # 递归扫描子目录
                 if item.is_dir():

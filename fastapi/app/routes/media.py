@@ -1,7 +1,8 @@
 import datetime
+import mimetypes
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form, Query
 from fastapi.responses import FileResponse
@@ -9,6 +10,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.models.media import FileNode, Media
 from app.services.scanner import FileScanner
+from app.services.media_service import copy_node, move_node, search_nodes, serialize_node
 from app.config import Config
 from app.db import get_db
 
@@ -51,6 +53,17 @@ class DeleteRequest(BaseModel):
     id: int
     permanent: bool = True
 
+
+class MoveRequest(BaseModel):
+    id: int
+    destination_id: int
+
+
+class CopyRequest(BaseModel):
+    id: int
+    destination_id: int
+    new_name: Optional[str] = None
+
 @router.get("/", response_model=List[MediaResponse])
 async def list_media(session: Session = Depends(get_db)):
     data = session.query(Media).all()
@@ -83,8 +96,8 @@ async def browse_files(
             nodes = session.query(FileNode).filter_by(parent_id=None, is_deleted=False).all()
             current_path = '/'
 
-        folders = [node for node in nodes if node.is_directory]
-        files = [node for node in nodes if not node.is_directory]
+        folders = [serialize_node(node) for node in nodes if node.is_directory]
+        files = [serialize_node(node) for node in nodes if not node.is_directory]
         return {
             "current_path": current_path,
             "folders": folders,
@@ -108,7 +121,7 @@ async def get_file_info(
                 raise HTTPException(status_code=404, detail="file not found")
         else:
             raise HTTPException(status_code=400, detail="missing id or path parameter")
-        return node
+        return serialize_node(node)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"get_file_info_failed: {str(e)}")
 
@@ -212,6 +225,29 @@ async def download_file(file_id: int, session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"download_failed: {str(e)}")
 
+
+@router.get("/play/{file_id}")
+async def play_media(file_id: int, session: Session = Depends(get_db)):
+    try:
+        file_node = session.query(FileNode).get(file_id)
+        if not file_node or file_node.is_directory:
+            raise HTTPException(status_code=404, detail="file not found")
+
+        if not os.path.exists(file_node.abs_path):
+            raise HTTPException(status_code=404, detail="file not found on disk")
+
+        media_type = file_node.mime_type or mimetypes.guess_type(file_node.name)[0] or "application/octet-stream"
+        return FileResponse(
+            path=file_node.abs_path,
+            filename=file_node.name,
+            media_type=media_type,
+            headers={"Accept-Ranges": "bytes"},
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"play_failed: {str(e)}")
+
 @router.put("/rename", response_model=FileNodeResponse)
 async def rename_file(request: RenameRequest, session: Session = Depends(get_db)):
     if not request.id or not request.new_name:
@@ -275,13 +311,88 @@ async def delete_file(request: DeleteRequest, session: Session = Depends(get_db)
         raise HTTPException(status_code=500, detail=f"delete_failed: {str(e)}")
 
 @router.get("/search")
-async def search_files():
-    # 未实现
-    pass
+async def search_files(
+    q: str = Query(..., min_length=1),
+    only_directory: bool = Query(False),
+    only_file: bool = Query(False),
+    limit: int = Query(20, ge=1, le=100),
+    session: Session = Depends(get_db),
+):
+    try:
+        nodes = search_nodes(
+            session=session,
+            keyword=q,
+            only_directory=only_directory,
+            only_file=only_file,
+            limit=limit,
+        )
+        return {
+            "keyword": q,
+            "count": len(nodes),
+            "results": [serialize_node(n) for n in nodes],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"search_failed: {str(e)}")
 
 @router.post("/move")
-async def move_file():
-    # 未实现
-    pass
+async def move_file(request: MoveRequest, session: Session = Depends(get_db)):
+    if request.id == request.destination_id:
+        raise HTTPException(status_code=400, detail="cannot move to itself")
+
+    try:
+        node = session.query(FileNode).get(request.id)
+        destination = session.query(FileNode).get(request.destination_id)
+
+        if not node:
+            raise HTTPException(status_code=404, detail="source node not found")
+        if not destination or not destination.is_directory:
+            raise HTTPException(status_code=404, detail="destination directory not found")
+
+        moved = move_node(session, node, destination)
+        return {
+            "msg": "move successful",
+            "node": serialize_node(moved),
+            "destination": serialize_node(destination),
+        }
+    except HTTPException:
+        raise
+    except ValueError as e:
+        session.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"move_failed: {str(e)}")
+
+
+@router.post("/copy")
+async def copy_file(request: CopyRequest, session: Session = Depends(get_db)):
+    if request.id == request.destination_id:
+        raise HTTPException(status_code=400, detail="cannot copy to itself")
+
+    try:
+        node = session.query(FileNode).get(request.id)
+        destination = session.query(FileNode).get(request.destination_id)
+
+        if not node:
+            raise HTTPException(status_code=404, detail="source node not found")
+        if not destination or not destination.is_directory:
+            raise HTTPException(status_code=404, detail="destination directory not found")
+
+        copied = copy_node(session, node, destination, request.new_name)
+        session.commit()
+        session.refresh(copied)
+        return {
+            "msg": "copy successful",
+            "node": serialize_node(copied),
+            "destination": serialize_node(destination),
+        }
+    except HTTPException:
+        raise
+    except ValueError as e:
+        session.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"copy_failed: {str(e)}")
 
 

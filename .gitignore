@@ -22,6 +22,7 @@ venv/
 
 # IDE
 .vscode/settings.json
+.vscode/
 
 # OS
 Thumbs.db

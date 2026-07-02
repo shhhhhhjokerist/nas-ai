@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.egg
+
+# Databases
+fastapi/test.db
+fastapi/data*.sqlite
+test.db
+
+# RAG
+chroma_db/
+evaluation/results/
+evaluation/chroma_db/
+
+# Environment
+.env
+venv/
+.conda/
+
+# IDE
+.vscode/settings.json
+
+# OS
+Thumbs.db
+.DS_Store
+
+fastapi/=0.6
+fastapi/=2.8
+
+vue/

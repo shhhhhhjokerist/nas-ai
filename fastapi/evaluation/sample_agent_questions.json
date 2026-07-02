@@ -1,0 +1,67 @@
+{
+  "questions": [
+    {
+      "id": "agent-file-info-01",
+      "question": "请帮我查看《薄荷糖》这个文件的详细信息",
+      "expected_action": "file_info",
+      "expected_tools": ["get_file_info_tool"],
+      "expected_data_fields": null,
+      "expected_response_keywords": ["薄荷糖"],
+      "description": "File info lookup — agent should call get_file_info_tool.  data_fields disabled because agent flattens tool output (file+urls → name+size+…)."
+    },
+    {
+      "id": "agent-search-01",
+      "question": "搜索所有名称中包含'电影'的文件",
+      "expected_action": "search",
+      "expected_tools": ["search_files_tool"],
+      "expected_data_fields": ["results"],
+      "expected_response_keywords": ["电影"],
+      "description": "File search by keyword.  search_files_tool data is passed through faithfully."
+    },
+    {
+      "id": "agent-folder-info-01",
+      "question": "显示'海女'文件夹的内容",
+      "expected_action": "folder_info",
+      "expected_tools": ["get_folder_info_tool"],
+      "expected_data_fields": null,
+      "expected_response_keywords": ["海女"],
+      "description": "Browse folder contents — agent drops children/urls from data, so data_fields is disabled."
+    },
+    {
+      "id": "agent-play-01",
+      "question": "我想在线播放《蓝色大门》",
+      "expected_action": "play",
+      "expected_tools": ["get_play_url_tool"],
+      "expected_data_fields": null,
+      "expected_response_keywords": ["蓝色大门"],
+      "description": "Video play URL request — agent restructures data like file_info."
+    },
+    {
+      "id": "agent-download-01",
+      "question": "下载《蓝色大门》这个文件",
+      "expected_action": "download",
+      "expected_tools": ["get_download_url_tool"],
+      "expected_data_fields": null,
+      "expected_response_keywords": ["蓝色大门"],
+      "description": "File download URL request — agent restructures data like file_info."
+    },
+    {
+      "id": "agent-doc-search-01",
+      "question": "本地文档中关于机器学习的内容有哪些？",
+      "expected_action": "document_search",
+      "expected_tools": ["search_documents_tool"],
+      "expected_data_fields": ["results"],
+      "expected_response_keywords": null,
+      "description": "Document knowledge base search.  Requires ChromaDB index to be built."
+    },
+    {
+      "id": "agent-chat-01",
+      "question": "你好，你能做什么？",
+      "expected_action": "chat",
+      "expected_tools": [],
+      "expected_data_fields": null,
+      "expected_response_keywords": null,
+      "description": "General chat — must NOT call any tools (expected_tools=[]).  Vacuously true if action=chat."
+    }
+  ]
+}

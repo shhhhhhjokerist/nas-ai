@@ -1,0 +1,241 @@
+{
+  "per_question": [
+    {
+      "question_id": "agent-file-info-01",
+      "question": "请帮我查看《薄荷糖》这个文件的详细信息",
+      "description": "File info lookup with book-title mark quoting",
+      "action": "search",
+      "response_preview": "抱歉，在文件系统中没有找到名为「薄荷糖」的文件或文件夹。请检查文件名是否准确，或尝试其他关键词进行搜索。",
+      "data_keys": [
+        "keyword",
+        "count"
+      ],
+      "tools_used": [
+        "get_file_info_tool",
+        "search_files_tool"
+      ],
+      "metrics": {
+        "latency_ms": 4172.18,
+        "prompt_tokens": 4246,
+        "completion_tokens": 281,
+        "total_tokens": 4527,
+        "tool_calls_count": 2,
+        "tools_used": [
+          "get_file_info_tool",
+          "search_files_tool"
+        ],
+        "llm_calls_count": 3
+      },
+      "checks": {
+        "action_match": false,
+        "tools_match": false,
+        "data_fields_match": false,
+        "success": false
+      }
+    },
+    {
+      "question_id": "agent-search-01",
+      "question": "搜索所有名称中包含'电影'的文件",
+      "description": "File search by keyword",
+      "action": "search",
+      "response_preview": "未找到名称中包含「电影」的文件。",
+      "data_keys": [
+        "keyword",
+        "count",
+        "results"
+      ],
+      "tools_used": [
+        "search_files_tool"
+      ],
+      "metrics": {
+        "latency_ms": 2443.85,
+        "prompt_tokens": 2705,
+        "completion_tokens": 174,
+        "total_tokens": 2879,
+        "tool_calls_count": 1,
+        "tools_used": [
+          "search_files_tool"
+        ],
+        "llm_calls_count": 2
+      },
+      "checks": {
+        "action_match": true,
+        "tools_match": true,
+        "data_fields_match": true,
+        "success": true
+      }
+    },
+    {
+      "question_id": "agent-folder-info-01",
+      "question": "显示'海女'文件夹的内容",
+      "description": "Browse folder contents",
+      "action": "search",
+      "response_preview": "抱歉，在文件系统中没有找到名为「海女」的文件夹或相关文件。请检查文件夹名称是否正确，或者尝试使用其他关键词进行搜索。",
+      "data_keys": [
+        "keyword",
+        "results"
+      ],
+      "tools_used": [
+        "get_folder_info_tool",
+        "search_files_tool"
+      ],
+      "metrics": {
+        "latency_ms": 5475.73,
+        "prompt_tokens": 5961,
+        "completion_tokens": 416,
+        "total_tokens": 6377,
+        "tool_calls_count": 3,
+        "tools_used": [
+          "get_folder_info_tool",
+          "search_files_tool"
+        ],
+        "llm_calls_count": 4
+      },
+      "checks": {
+        "action_match": false,
+        "tools_match": false,
+        "data_fields_match": false,
+        "success": false
+      }
+    },
+    {
+      "question_id": "agent-play-01",
+      "question": "我想在线播放《蓝色大门》",
+      "description": "Video play URL request",
+      "action": "search",
+      "response_preview": "抱歉，在当前 NAS 中没有找到名为《蓝色大门》的视频文件。请确认文件名是否正确，或者尝试搜索其他关键词。",
+      "data_keys": [
+        "keyword",
+        "results"
+      ],
+      "tools_used": [
+        "get_play_url_tool",
+        "search_files_tool"
+      ],
+      "metrics": {
+        "latency_ms": 4236.3,
+        "prompt_tokens": 4230,
+        "completion_tokens": 265,
+        "total_tokens": 4495,
+        "tool_calls_count": 2,
+        "tools_used": [
+          "get_play_url_tool",
+          "search_files_tool"
+        ],
+        "llm_calls_count": 3
+      },
+      "checks": {
+        "action_match": false,
+        "tools_match": false,
+        "data_fields_match": false,
+        "success": false
+      }
+    },
+    {
+      "question_id": "agent-download-01",
+      "question": "下载《蓝色大门》这个文件",
+      "description": "File download URL request",
+      "action": "search",
+      "response_preview": "抱歉，在文件系统中没有找到名为《蓝色大门》的文件，请检查文件名是否正确。",
+      "data_keys": [],
+      "tools_used": [
+        "get_download_url_tool",
+        "search_files_tool"
+      ],
+      "metrics": {
+        "latency_ms": 4476.6,
+        "prompt_tokens": 4258,
+        "completion_tokens": 270,
+        "total_tokens": 4528,
+        "tool_calls_count": 2,
+        "tools_used": [
+          "get_download_url_tool",
+          "search_files_tool"
+        ],
+        "llm_calls_count": 3
+      },
+      "checks": {
+        "action_match": false,
+        "tools_match": false,
+        "data_fields_match": false,
+        "success": false
+      }
+    },
+    {
+      "question_id": "agent-doc-search-01",
+      "question": "本地文档中关于机器学习的内容有哪些？",
+      "description": "Document knowledge base search",
+      "action": null,
+      "response_preview": "",
+      "data_keys": [],
+      "tools_used": [
+        "search_documents_tool"
+      ],
+      "metrics": {
+        "latency_ms": 17885.2,
+        "prompt_tokens": 4290,
+        "completion_tokens": 295,
+        "total_tokens": 4585,
+        "tool_calls_count": 2,
+        "tools_used": [
+          "search_documents_tool"
+        ],
+        "llm_calls_count": 3
+      },
+      "checks": {
+        "action_match": false,
+        "tools_match": true,
+        "data_fields_match": false,
+        "success": false
+      }
+    },
+    {
+      "question_id": "agent-chat-01",
+      "question": "你好，你能做什么？",
+      "description": "General capability inquiry — no tools expected",
+      "action": "chat",
+      "response_preview": "你好！我是你的 NAS 文件系统助手，我可以帮你做以下事情：\n\n1. 📂 **查找文件/文件夹信息** — 查看文件详情、浏览文件夹内容\n2. 🔍 **搜索文件** — 根据关键词快速找到文件或文件夹\n3. ⬇️ **提供下载链接** — 获取文件的直接下载地址\n4. ▶️ **提供在线播放链接** — 获取视频文件的在线播放地址\n5. 📁 **移动/复制文件** — 整理和管理你的文件\n6. 📄 **搜索本地文档知识库** — 在 PDF、Word、txt、markdown 等文档中搜索知识、论文内容、摘要等\n\n你可以直接告诉我你的需求，比如：“帮我找一下XX电影”、“搜索关于机器学习的资料”、“把文件A移到文件夹B”等，我会立刻帮你处理！",
+      "data_keys": [],
+      "tools_used": [],
+      "metrics": {
+        "latency_ms": 3463.4,
+        "prompt_tokens": 1282,
+        "completion_tokens": 236,
+        "total_tokens": 1518,
+        "tool_calls_count": 0,
+        "tools_used": [],
+        "llm_calls_count": 1
+      },
+      "checks": {
+        "action_match": true,
+        "tools_match": true,
+        "success": true
+      }
+    }
+  ],
+  "aggregate": {
+    "success_rate": 0.2857,
+    "avg_latency_ms": 6021.89,
+    "max_latency_ms": 17885.2,
+    "min_latency_ms": 2443.85,
+    "avg_prompt_tokens": 3853.1,
+    "avg_completion_tokens": 276.7,
+    "avg_total_tokens": 4129.9,
+    "avg_tool_calls_per_question": 1.71,
+    "tool_usage_distribution": {
+      "get_file_info_tool": 1,
+      "search_files_tool": 5,
+      "get_folder_info_tool": 1,
+      "get_play_url_tool": 1,
+      "get_download_url_tool": 1,
+      "search_documents_tool": 1
+    },
+    "total_questions": 7
+  },
+  "config": {
+    "agent_model": "glm-4-flashx-250414",
+    "num_questions": 7
+  },
+  "timestamp": "2026-07-01 21:07:03",
+  "elapsed_seconds": 46.8
+}

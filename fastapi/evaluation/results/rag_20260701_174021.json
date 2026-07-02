@@ -1,0 +1,625 @@
+{
+  "retrieval": {
+    "hit_rate": 0.8333,
+    "mrr": 0.8627,
+    "precision_at_k": 0.4867,
+    "recall_at_k": 0.8333
+  },
+  "generation": {
+    "faithfulness": 0.0333,
+    "relevance": 0.2
+  },
+  "per_question": [
+    {
+      "question_id": "q1_chebnet",
+      "question": "ChebNet 使用切比雪夫多项式进行图卷积近似时，K 阶局部性如何控制？当 K=1 且加入重归一化技巧后，ChebNet 退化为哪种常见图神经网络？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，其中没有包含任何关于 ChebNet、切比雪夫多项式、图卷积、K 阶局部性、重归一化技巧或相关图神经网络（如 GCN）的信息。因此，我无法基于这些摘录回答您的问题。请提供相关的文档内容。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "MAE.pdf",
+        "ResNet.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_chebnet",
+      "question": "ChebNet 在 MNIST 超像素图和 20Newsgroups 数据集上的分类准确率分别约为多少？相比传统的谱图卷积方法，其在计算复杂度上有何优势？",
+      "expected_answer": "",
+      "answer": "根据您提供的文档摘录，其中并未包含关于“ChebNet”、“MNIST超像素图”、“20Newsgroups数据集”或“传统谱图卷积方法”的任何信息。因此，我无法回答您关于ChebNet在这些数据集上的分类准确率及其计算复杂度优势的问题。请提供相关文档以便进一步查询。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "ViT.pdf",
+        "MAE.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_chebnet",
+      "question": "ChebNet 中用于递归计算切比雪夫多项式的特征值缩放范围是多少？如果忽略该缩放，训练中可能会出现什么问题？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有找到关于 ChebNet 中用于递归计算切比雪夫多项式的特征值缩放范围的具体信息**，也没有提及忽略该缩放可能导致的训练问题。\n\n文档摘录中仅包含 ChebNet 模型的一个简要描述（涉及图神经网络层、扩散和节点局部操作），但未涉及特征值缩放的具体参数或相关训练注意事项。因此，无法基于现有信息回答您的问题。",
+      "hit": true,
+      "reciprocal_rank": 0.2,
+      "precision": 0.2,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "ViT.pdf",
+        "GAT.pdf",
+        "MAE.pdf",
+        "Swin_Transformer.pdf",
+        "ChebNet.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_gcn",
+      "question": "GCN 中的对称归一化邻接矩阵具体公式是什么？该归一化为什么能避免训练过程中的数值不稳定和梯度消失问题？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，GCN中对称归一化邻接矩阵的具体公式为：\n\n\\[\n\\hat{A} = \\tilde{D}^{-\\frac{1}{2}} \\tilde{A} \\tilde{D}^{-\\frac{1}{2}}\n\\]\n\n其中，\\(\\tilde{A} = A + I_N\\) 是添加了自环的邻接矩阵，\\(\\tilde{D}\\) 是 \\(\\tilde{A}\\) 的度矩阵。\n\n关于该归一化为什么能避免训练过程中的数值不稳定和梯度消失问题，**文档摘录中没有提供相关的解释或说明**。因此，我无法基于现有信息回答这一部分问题。如需进一步了解，建议参考其他文献或补充资料。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "GCN.pdf",
+        "DDPM.pdf",
+        "ChebNet.pdf",
+        "ChebNet.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_gcn",
+      "question": "GCN 在 Cora 数据集上使用 2 层结构时，能达到多少准确率？当层数增加到 4 层时，性能为何会急剧下降？论文中是如何解释这种过平滑现象的？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有足够的信息**来回答您的问题。\n\n具体原因如下：\n1.  **关于准确率**：摘录中提到了在 Cora、Citeseer 和 Pubmed 数据集上进行了关于模型深度的实验，并提到了使用残差连接，但**没有给出具体的准确率数值**（例如2层或4层时的准确率）。\n2.  **关于性能下降原因**：摘录中提到了“模型深度（层数）对分类性能的影响”以及“残差连接”，但**没有解释当层数增加时性能为何会下降**，也没有提及“过平滑现象”这一术语或相关解释。\n\n因此，我无法从现有摘录中回答您的问题。建议您查阅完整的 GCN 论文（ICLR 2017）以获取这些具体数据和解释。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "ResNet.pdf",
+        "GCN.pdf",
+        "ViT.pdf",
+        "ViT.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_gcn",
+      "question": "GCN 的论文中对比了使用邻接矩阵 A 与 A^2 作为输入，其结论是什么？这表明 GCN 对高阶邻域的建模能力存在什么限制？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有找到**关于GCN论文中对比使用邻接矩阵 A 与 A² 作为输入的结论，也没有提及GCN对高阶邻域建模能力的限制。\n\n摘录中仅描述了GCN的前向传播公式（如公式9）、损失函数（公式10）以及重归一化技巧（如公式8），但未涉及对A与A²作为输入的对比实验或相关讨论。\n\n因此，我无法基于现有信息回答您的问题。如需了解该对比结论及限制，建议查阅原始GCN论文（如Kipf & Welling, 2017）中关于模型深度与过平滑问题的相关章节。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.6,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "GCN.pdf",
+        "GAT.pdf",
+        "ChebNet.pdf",
+        "GCN.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_resnet",
+      "question": "ResNet-34 和 ResNet-50 在 ImageNet 上的 top-1 和 top-5 错误率分别是多少？ResNet-50 相比 ResNet-34 虽然层数更深，为什么参数量和计算量反而更低？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有足够的信息**来回答您的问题。\n\n具体原因如下：\n1.  **关于错误率**：文档摘录中只提到了 ResNet-34 在 ImageNet 上的 Top-1 错误率（27.88%），并未提及 ResNet-50 的任何错误率数据，也没有任何模型的 Top-5 错误率数据。\n2.  **关于参数量和计算量**：文档摘录中完全没有提及 ResNet-34 的参数量或计算量（FLOPs）。虽然提到了 ResNet-50 的计算量为 3.8 billion FLOPs，但由于缺少 ResNet-34 的对应数据，无法进行比较，也无法解释“为什么层数更深但参数量和计算量更低”这一现象（实际上，通常 ResNet-50 的参数量和计算量都高于 ResNet-34，但文档中无相关数据支持此结论）。\n\n建议您查阅完整的 ResNet 论文或相关技术文档以获取这些具体数据。",
+      "hit": true,
+      "reciprocal_rank": 0.5,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "CLIP.pdf",
+        "ResNet.pdf",
+        "CLIP.pdf",
+        "ViT.pdf",
+        "ResNet.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_resnet",
+      "question": "ResNet 的核心残差单元形式为 y = F(x, {W_i}) + x，当 x 和 F 的维度不匹配时，论文提出了哪两种 projection 方式？哪种方式在实验中表现更好？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，当 x 和 F 的维度不匹配时，论文提出的方式是：通过快捷连接（shortcut connections）执行一个线性投影 \\( W_s \\)，即 \\( y = F(x, \\{W_i\\}) + W_s x \\)。文档中还提到，也可以使用一个方阵 \\( W_s \\)，但实验表明恒等映射（identity mapping）足以解决退化问题且更经济，因此 \\( W_s \\) 仅用于维度匹配时。\n\n摘录中并未明确比较两种 projection 方式（线性投影与方阵投影）的实验表现，也未说明哪种方式更好。因此，无法从提供的信息中得出哪种方式在实验中表现更优的结论。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "ResNet.pdf",
+        "ResNet.pdf",
+        "GAT.pdf",
+        "ChebNet.pdf",
+        "DDPM.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_resnet",
+      "question": "ResNet 论文中的消融实验表明，在 CIFAR-10 上使用 110 层的 plain 网络（无残差）会出现什么现象？而加入残差连接后，训练误差和测试误差分别呈现怎样的变化趋势？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有足够的信息**来回答您的问题。\n\n摘录中虽然提到了CIFAR-10数据集和超过100层的网络（如“over 100 layers”），但并未提及关于“110层的plain网络（无残差）会出现什么现象”的具体消融实验结果，也没有描述加入残差连接后训练误差和测试误差的变化趋势。\n\n建议您直接查阅ResNet论文的原文（特别是关于CIFAR-10实验的消融研究部分）以获取这些详细信息。",
+      "hit": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "precision": 0.2,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "ResNet.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_gat",
+      "question": "GAT 中使用的多头注意力机制，其输出拼接和平均两种方式分别适用于网络中的哪些层？论文在 Cora 数据集上使用 8 头注意力时，分类准确率达到了多少？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有包含关于GAT中多头注意力机制输出拼接和平均分别适用于哪些层的具体说明**，也没有提及在Cora数据集上使用8头注意力时的分类准确率数值。\n\n摘录中仅提到GAT模型在Cora等数据集上达到了“state-of-the-art results”（最先进的结果），但未提供具体的准确率数字或注意力机制细节。因此，无法从现有信息中回答您的问题。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GAT.pdf",
+        "MAE.pdf",
+        "ResNet.pdf",
+        "GAT.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_gat",
+      "question": "GAT 的注意力系数计算中使用了 LeakyReLU 非线性激活，其负斜率为多少？相比 GCN 的静态归一化系数，GAT 的动态注意力权重在归纳学习（inductive learning）任务上有什么根本优势？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有找到关于GAT注意力系数计算中LeakyReLU负斜率的具体数值**，也没有直接比较GAT动态注意力权重与GCN静态归一化系数在归纳学习任务上根本优势的描述。\n\n文档摘录中仅提到GAT可以视为MoNet的一个特例，并涉及了伪坐标函数和权重函数的定义，但未提及LeakyReLU的负斜率参数。同时，摘录中也没有对GAT与GCN在归纳学习任务上的优势进行对比分析。\n\n因此，我无法从现有信息中回答您的问题。建议您查阅GAT原始论文（如《Graph Attention Networks》）以获取LeakyReLU负斜率的默认值（通常为0.2），并了解动态注意力机制在归纳学习中的优势（例如，能够处理未见过的图结构或节点，无需重新训练）。",
+      "hit": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "precision": 0.2,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "MAE.pdf",
+        "GAT.pdf",
+        "CLIP.pdf",
+        "BERT.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_gat",
+      "question": "GAT 在 Pubmed 数据集上对比 GCN 的准确率提升大约是多少个百分点？论文中是否发现注意力头数越多性能一定越好？其结论是什么？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**无法回答**用户的问题。原因如下：\n\n1.  **关于准确率提升**：文档摘录中仅列出了GAT论文中其他方法（如MLP、ManiReg、SemiEmb、LP、DeepWalk）在Pubmed数据集上的准确率，但**没有提供GAT本身在Pubmed上的准确率**，也没有提供GCN在Pubmed上的准确率数据。因此无法计算GAT对比GCN的准确率提升百分点。\n2.  **关于注意力头数与性能关系**：文档摘录中**没有提及**关于注意力头数（attention heads）数量与模型性能之间关系的实验或结论。\n\n建议查阅完整的GAT论文（《Graph Attention Networks》）以获取上述信息。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.6,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GAT.pdf",
+        "GAT.pdf",
+        "ResNet.pdf",
+        "GAT.pdf",
+        "ResNet.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_bert",
+      "question": "BERT 的预训练任务包括 Masked LM 和 Next Sentence Prediction，其中 Masked LM 的掩码比例是多少？该比例下选中的 token 分别以多少概率被替换为 [MASK]、随机词或保持不变？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，BERT 的 Masked LM 预训练任务中，掩码比例为 **15%**。对于这 15% 被选中的 token，文档中明确提到“replacement only occurs for 1.5% of all tokens (i.e., 10% of 15%)”，但并未完整说明三种情况（替换为 [MASK]、随机词、保持不变）各自的具体概率。摘录中仅提及了部分信息，未提供完整的概率分布细节。\n\n因此，基于现有文档摘录，无法完整回答该比例下选中的 token 分别以多少概率被替换为 [MASK]、随机词或保持不变。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "BERT.pdf",
+        "BERT.pdf",
+        "BERT.pdf",
+        "BERT.pdf",
+        "BERT.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_bert",
+      "question": "BERT-Base 和 BERT-Large 的参数量分别为多少？在 GLUE 基准测试中，BERT-Large 相比 BERT-Base 在平均分上提升了多少？论文中认为这种提升主要归因于哪方面？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，BERT-Base 的参数量为 **110M**，BERT-Large 的参数量为 **340M**。\n\n关于在 GLUE 基准测试中的提升，文档摘录中仅提到 BERT 将 GLUE 分数提升至 **80.5%**（相比之前提升了 7.7 个百分点），但并未分别给出 BERT-Base 和 BERT-Large 在 GLUE 上的具体平均分，因此无法计算 BERT-Large 相比 BERT-Base 在平均分上的具体提升数值。\n\n此外，文档摘录中也没有明确说明这种提升主要归因于哪方面。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "BERT.pdf",
+        "ResNet.pdf",
+        "CLIP.pdf",
+        "BERT.pdf",
+        "ViT.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_bert",
+      "question": "BERT 论文中对比了不同预训练策略（仅 Masked LM、仅 NSP、两者联合）在 SQuAD 和 MNLI 任务上的效果，结论是什么？剥离 NSP 任务后，哪个任务性能下降最明显？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，BERT 论文中对比了不同预训练策略（如“No NSP”和“LTR & No NSP”）的效果，并提到了在 QNLI、MNLI 和 SQuAD 1.1 任务上，**去除 NSP 任务会显著损害性能**。具体来说，摘录指出：“removing NSP hurts performance significantly on QNLI, MNLI, and SQuAD 1.1”。但摘录中**没有明确列出“仅 Masked LM”、“仅 NSP”和“两者联合”这三种策略在 SQuAD 和 MNLI 上的具体数值对比**，也没有明确指出剥离 NSP 后哪个任务性能下降最明显。\n\n因此，基于现有摘录，无法回答“剥离 NSP 任务后，哪个任务性能下降最明显”这一具体问题。如需完整结论，建议查阅论文原文中的 Table 5 及相关分析。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "BERT.pdf",
+        "BERT.pdf",
+        "BERT.pdf",
+        "BERT.pdf",
+        "BERT.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_vit",
+      "question": "ViT 将图像分割成固定大小的 Patch 并进行线性投影，在 ImageNet-1K 上训练时，使用中等规模数据集（如 ImageNet-1K）训练的性能为何不如 ResNet？论文中给出的核心原因是什么？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，关于ViT在ImageNet-1K（中等规模数据集）上训练时性能不如ResNet的原因，摘录中有明确说明。\n\n在[来源: ViT.pdf]的Figure 3描述中提到：\n> “While large ViT models perform worse than BiT ResNets (shaded area) when pre-trained on small datasets, they shine when pre-trained on larger datasets.”\n\n此外，[来源: Swin_Transformer.pdf]也指出：\n> “The results of ViT on image classiﬁcation are encouraging, but its architecture is unsuitable for use as a general-purpose backbone network on dense vision tasks or when the input image resolution is high, due to its low-resolution feature maps and the quadratic increase in complexity with image size.”\n\n**核心原因总结如下：**\n1. **数据量不足导致归纳偏置缺失**：ViT（Vision Transformer）作为纯Transformer架构，相比卷积神经网络（如ResNet）缺乏图像特有的归纳偏置（如局部性和平移不变性）。当在中等规模数据集（如ImageNet-1K）上训练时，模型无法像在大型数据集（如JFT-300M）上那样通过大量数据学习到有效的视觉特征，因此性能不如具有更强归纳偏置的ResNet。\n2. **架构对中等规模数据不友好**：ViT在较小数据集上表现较差，而ResNet（特别是BiT变体）在相同条件下表现更好。随着预训练数据集规模增大，ViT的优势才逐渐显现。\n\n因此，文档摘录中给出的核心原因是：**ViT在中等规模数据集上缺乏足够的训练数据来弥补其较弱的归纳偏置，导致性能不如具有更强归纳偏置的ResNet。**",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "ViT.pdf",
+        "ViT.pdf",
+        "CLIP.pdf",
+        "Swin_Transformer.pdf",
+        "MAE.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_vit",
+      "question": "ViT 的位置编码采用了可学习的 1D 位置嵌入，而非 2D 坐标感知的位置编码。论文中通过消融实验表明，2D 位置编码相比 1D 位置编码在性能上是否有显著优势？实际差异约为多少？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有包含关于ViT位置编码（1D vs 2D）的消融实验或性能对比信息**。摘录中仅提到了ViT模型的不同变体（如ViT-B/16、ViT-B/32等）及其在ImageNet上的性能表现，但未涉及位置编码的具体设计或相关消融实验的数值结果。\n\n因此，我无法回答关于2D位置编码相比1D位置编码的性能优势或实际差异。建议查阅原始ViT论文（Dosovitskiy et al., 2020）中关于位置编码的消融实验部分以获取详细信息。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.4,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "ViT.pdf",
+        "CLIP.pdf",
+        "ChebNet.pdf",
+        "ViT.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_vit",
+      "question": "ViT 论文中提出当预训练数据达到 JFT-300M 规模时，ViT-Huge 在 ImageNet 上的 top-1 准确率达到了多少？该结果相比当时的 SOTA（BiT-L）提升了约多少？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有直接给出 ViT-Huge 在 JFT-300M 预训练后于 ImageNet 上的具体 top-1 准确率数值**，也没有明确说明相比 BiT-L 的提升幅度。\n\n摘录中仅提到：\n- 图 3 显示“当预训练数据集较大时，大型 ViT 模型表现优于 BiT ResNets”。\n- 图 4 展示了不同模型在 JFT 预训练样本数量下的线性 few-shot 性能，但未给出 ViT-Huge 的最终 top-1 准确率。\n\n因此，**无法从现有摘录中回答该问题**。如需准确数据，建议查阅原论文（ViT.pdf）中图 3 或相关表格的具体数值。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.6,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "ViT.pdf",
+        "ViT.pdf",
+        "MAE.pdf",
+        "ViT.pdf",
+        "MAE.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_swin",
+      "question": "Swin Transformer 的核心创新是移位窗口（Shifted Window）注意力机制，该设计将计算复杂度从 ViT 的 O(N^2) 降低到多少？具体窗口大小 M 通常设为多少？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，没有直接说明Swin Transformer将计算复杂度从ViT的O(N²)降低到多少，也没有明确给出窗口大小M的具体数值。摘录中仅提到“具有线性计算复杂度”（linear computational complexity），并在示例中使用了M=4（如“2 × 2 windows of size 4 × 4 (M = 4)”），但未说明这是否为通常设定值。因此，无法从摘录中完整回答您的问题。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_swin",
+      "question": "Swin Transformer 在 COCO 目标检测任务上作为骨干网络，使用 Cascade Mask R-CNN 框架时，box AP 达到了多少？相比使用 ResNeXt-101 的基线，提升了多少个点？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，Swin Transformer 在使用 Cascade Mask R-CNN 框架时，box AP 达到了 **51.9**。相比使用 ResNeXt-101-64x4d 的基线，提升了 **+3.6 box AP**。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.6,
+      "recall": 1.0,
+      "faithfulness": 1.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "Swin_Transformer.pdf",
+        "ResNet.pdf",
+        "ResNet.pdf",
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_swin",
+      "question": "Swin Transformer 论文中的消融实验显示，移除相对位置偏置（relative position bias）后，在 ImageNet-1K 上的准确率下降了多少？相对位置偏置的可学习参数数量与窗口大小 M 之间存在什么数学关系？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有找到关于“移除相对位置偏置（relative position bias）后准确率下降多少”的具体消融实验结果**，也没有提及“相对位置偏置的可学习参数数量与窗口大小 M 之间的数学关系”。摘录中主要讨论了Swin Transformer的结构、与DeiT的对比、以及ImageNet-22K预训练的效果，但未涉及您询问的这两个具体细节。\n\n因此，我无法从现有摘录中回答您的问题。建议您查阅完整的Swin Transformer论文原文，特别是其中的“消融实验”和“相对位置偏置”相关章节。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.8,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_mae",
+      "question": "MAE 提出的掩码比例高达 75%，其设计动机是什么？论文中对比了不同掩码比例（如 50%、75%、90%）对 fine-tuning 和 linear probing 准确率的影响，结论是什么？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，MAE 提出的高掩码比例（如75%）的设计动机是：**模型通过推断缺失的块来产生不同但合理的输出，这有助于理解物体和场景的整体形态（gestalt），而不仅仅是延伸线条或纹理。这种类似推理的行为被认为与学习有用的表征相关。**\n\n关于不同掩码比例（如50%、75%、90%）对 fine-tuning 和 linear probing 准确率的影响，**文档摘录中没有提供具体的对比数据和结论**。摘录中仅提到MAE的掩码比例（75%）远高于相关工作中的20%至50%，但未给出不同比例下的准确率对比结果。因此，无法根据现有信息回答该部分问题。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "MAE.pdf",
+        "MAE.pdf",
+        "MAE.pdf",
+        "MAE.pdf",
+        "MAE.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_mae",
+      "question": "MAE 采用非对称编码器-解码器架构，其编码器仅处理可见 Patch。在 ViT-Large 配置下，该设计相比全量处理可减少多少计算量（FLOPs）？解码器的深度和宽度通常设为多大？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有直接给出 MAE 在 ViT-Large 配置下相比全量处理减少的具体 FLOPs 数值**。摘录中仅提供了训练时间（wall-clock time）和加速比（speedup），例如 ViT-L 在 8 层解码器深度下加速 2.8 倍，在 1 层解码器深度下加速 3.7 倍，但未量化 FLOPs 的减少量。\n\n关于解码器的深度和宽度，摘录中明确提到：**“The decoder width is 512, and the mask ratio is 75%.”**（解码器宽度为 512，掩码比例为 75%）。但未明确说明解码器的深度（即层数），不过表格中显示了两种深度配置（8 层和 1 层），因此深度可根据具体配置选择，常见为 8 层或 1 层。\n\n综上，无法回答 FLOPs 减少的具体数值；解码器宽度通常为 512，深度可为 8 层或 1 层。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.6,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "MAE.pdf",
+        "MAE.pdf",
+        "ViT.pdf",
+        "MAE.pdf",
+        "BERT.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_mae",
+      "question": "MAE 在 ImageNet-1K 上使用 ViT-Huge 进行微调后，top-1 准确率达到了 87.8%。该结果与有监督的 ViT-Huge 相比，提升了大约多少？论文中认为 MAE 预训练为何在下游任务中泛化性更好？",
+      "expected_answer": "",
+      "answer": "根据文档摘录，MAE 在 ImageNet-1K 上使用 ViT-Huge 进行微调后，top-1 准确率达到了 87.8%。但摘录中并未提供有监督 ViT-Huge 在 ImageNet-1K 上的具体准确率数值，因此无法直接计算提升幅度。不过，摘录中提到了另一个对比：在 ImageNet-A（IN-A）数据集上，MAE 预训练的 ViT-H 比有监督的 ViT-H 提升了 35%（68.2% vs 33.1%），这间接说明了 MAE 的优越性。\n\n关于 MAE 预训练为何在下游任务中泛化性更好，摘录中明确指出：MAE 能够学习到非常高容量的模型，并且这些模型具有良好的泛化能力。通过 MAE 预训练，可以在 ImageNet-1K 上训练像 ViT-Large 和 ViT-Huge 这样“数据饥饿”的模型，并显著提升其泛化性能。此外，MAE 预训练还能轻松扩展到大型模型，并减少过拟合（例如，对于更大的 ViT-L 模型，MAE 相比其他自监督方法能更好地减少过拟合）。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 0.8,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "MAE.pdf",
+        "MAE.pdf",
+        "MAE.pdf",
+        "ResNet.pdf",
+        "MAE.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_clip",
+      "question": "CLIP 训练使用了 4 亿个图像-文本对，其对比损失函数是在哪个维度上计算 softmax？是图像侧、文本侧，还是双向对称的？具体公式中温度参数 τ 的作用是什么？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有包含关于CLIP训练使用的图像-文本对数量、对比损失函数中softmax的计算维度，以及温度参数τ具体作用的任何信息**。摘录中仅列出了CLIP的部分超参数（如批量大小、词汇量、学习率等），但未涉及损失函数的设计细节。\n\n因此，我无法基于现有文档回答您的问题。建议您查阅CLIP的原始论文或相关技术文档以获取这些信息。",
+      "hit": true,
+      "reciprocal_rank": 0.2,
+      "precision": 0.2,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "ViT.pdf",
+        "Swin_Transformer.pdf",
+        "ResNet.pdf",
+        "ResNet.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_clip",
+      "question": "CLIP 在 ImageNet 上进行 zero-shot 分类时，使用了哪种 prompt 集成策略（例如 “a photo of a {label}”）？该策略相比单纯使用类别名称能提升多少准确率？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有提及** CLIP 在 ImageNet 上进行 zero-shot 分类时具体使用了哪种 prompt 集成策略（例如 “a photo of a {label}”），也没有提供该策略相比单纯使用类别名称能提升多少准确率的具体数据。\n\n摘录中主要讨论了 CLIP 的 zero-shot 性能、鲁棒性、与 few-shot 学习的对比以及社会影响，但未涉及 prompt 模板的细节或准确率提升的量化比较。因此，无法从现有信息中回答您的问题。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_clip",
+      "question": "CLIP 论文中对比了多种视觉编码器（ResNet 和 ViT）和文本编码器（Transformer）的规模影响，结论是模型规模对 zero-shot 性能的影响是主导因素还是数据量是主导因素？在计算资源固定时，应优先增加视觉模型还是文本模型的参数量？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，**没有足够的信息**来回答用户的问题。\n\n摘录中主要讨论了CLIP的zero-shot性能、与ImageNet模型的对比、数据效率以及在不同数据集上的表现（如UCF101），但**并未提及**关于“对比多种视觉编码器（ResNet和ViT）和文本编码器（Transformer）的规模影响”的具体结论，也没有分析“模型规模与数据量对zero-shot性能的主导作用”，更没有涉及“在计算资源固定时，应优先增加视觉模型还是文本模型参数量”的建议。\n\n因此，我无法基于现有摘录给出准确回答。如需了解这些细节，建议查阅CLIP论文的完整内容（特别是关于模型架构缩放实验的部分）。",
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf",
+        "CLIP.pdf"
+      ]
+    },
+    {
+      "question_id": "q1_ddpm",
+      "question": "DDPM 的前向扩散过程共包含 T 步，论文中常用的 T 值是多少？噪声调度中的 β_t 从初始值到结束值分别约为多少（例如线性调度范围）？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，其中没有包含任何关于DDPM（Denoising Diffusion Probabilistic Models）的信息。摘录内容涉及GCN、Swin Transformer、ViT和MAE等模型，但未提及扩散模型、前向扩散过程的步数T或噪声调度参数β_t。因此，无法从这些文档中回答您的问题。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "Swin_Transformer.pdf",
+        "ViT.pdf",
+        "MAE.pdf",
+        "MAE.pdf"
+      ]
+    },
+    {
+      "question_id": "q2_ddpm",
+      "question": "DDPM 的反向过程需要训练一个去噪模型来预测噪声 ε。论文中给出了训练目标的简化形式 L_simple，该形式省略了哪些系数？为什么该简化形式能获得更好的生成质量？",
+      "expected_answer": "",
+      "answer": "根据您提供的文档摘录，其中并未包含关于DDPM（去噪扩散概率模型）的任何信息，也没有提及“反向过程”、“去噪模型”、“预测噪声 ε”、“训练目标简化形式 L_simple”或相关系数省略与生成质量的关系。\n\n因此，我无法基于现有摘录回答您的问题。请提供包含DDPM相关内容的文档摘录。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "MAE.pdf",
+        "ViT.pdf",
+        "Swin_Transformer.pdf",
+        "Swin_Transformer.pdf",
+        "GCN.pdf"
+      ]
+    },
+    {
+      "question_id": "q3_ddpm",
+      "question": "DDPM 在 CIFAR-10 上生成的图像 FID 分数达到了约多少？当采样步数从 1000 步缩减到 100 步时，FID 会发生什么变化？论文中是否提出使用更好的采样调度器（如 DDIM）来解决该问题？",
+      "expected_answer": "",
+      "answer": "根据您提供的文档摘录，其中并未包含关于DDPM（Denoising Diffusion Probabilistic Models）在CIFAR-10上的FID分数、采样步数变化对FID的影响，或使用DDIM等采样调度器的相关信息。这些摘录主要涉及ViT（Vision Transformer）、Swin Transformer和CLIP等模型，与扩散模型无关。\n\n因此，我无法从现有文档中回答您的问题。如果您需要这些信息，建议查阅DDPM或DDIM的原始论文。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "ViT.pdf",
+        "Swin_Transformer.pdf",
+        "ViT.pdf",
+        "CLIP.pdf",
+        "ViT.pdf"
+      ]
+    }
+  ],
+  "config": {
+    "top_k": 5,
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "embedding_model": "BAAI/bge-small-zh-v1.5",
+    "num_questions": 30,
+    "labeled_questions": 30,
+    "note": "Hit Rate / MRR / Precision / Recall 需要 relevant_file 标签；Faithfulness / Relevance 由 LLM Judge 自动评分无需标签"
+  },
+  "timestamp": "2026-07-01 17:40:21",
+  "elapsed_seconds": 109.3
+}

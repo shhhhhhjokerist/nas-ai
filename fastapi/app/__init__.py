@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from fastapi_jwt_auth import AuthJWT
-from fastapi_jwt_auth.exceptions import AuthJWTException
+from app.jwt_helper import AuthJWT, AuthJWTException
 from fastapi.responses import JSONResponse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
@@ -11,6 +10,7 @@ from app.db import Base, engine
 
 from app.models.user import User
 from app.models.media import FileNode, Media
+from app.models.document import DocumentRecord
 
 # FastAPI app
 app = FastAPI()
@@ -39,6 +39,10 @@ from app.routes import auth, media, scan
 app.include_router(auth.router)
 app.include_router(media.router)
 app.include_router(scan.router)
+
+from app.routes import documents, rag
+app.include_router(documents.router)
+app.include_router(rag.router)
 
 from app.agents import router
 app.include_router(router.agent_router)

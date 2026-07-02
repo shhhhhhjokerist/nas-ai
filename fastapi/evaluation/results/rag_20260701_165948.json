@@ -1,0 +1,83 @@
+{
+  "retrieval": {
+    "hit_rate": 0.0,
+    "mrr": 0,
+    "precision_at_k": 0.0,
+    "recall_at_k": 0.0
+  },
+  "generation": {
+    "faithfulness": 0.3333,
+    "relevance": 0.6667
+  },
+  "per_question": [
+    {
+      "question_id": "q1",
+      "question": "这篇文档的主要主题是什么？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，这些内容主要涉及**图卷积网络（GCN）**、**ChebNet（基于切比雪夫多项式的图卷积）** 以及**残差网络（ResNet）** 的相关研究。摘录中讨论了图卷积滤波器的参数化方法、与Weisfeiler-Lehman算法的关系、以及残差网络中的恒等快捷连接（identity shortcuts）等技术细节。\n\n然而，由于摘录来自多个不同的文档（GCN.pdf、ChebNet.pdf、resnet.pdf），且内容分散，无法确定用户所指的“这篇文档”具体是哪一份。因此，**无法准确判断单一文档的主要主题**。建议用户明确指定具体文档名称，以便提供更精确的回答。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "ChebNet.pdf",
+        "resnet.pdf",
+        "GCN.pdf",
+        "ChebNet.pdf"
+      ]
+    },
+    {
+      "question_id": "q2",
+      "question": "文档中提到了哪些关键发现或结论？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，可以总结出以下关键发现或结论：\n\n1. **模型设计方面**：通过堆叠多个卷积层，可以恢复丰富的卷积滤波器函数，而不受限于如切比雪夫多项式等显式参数化方法。这种模型有望缓解在节点度分布非常广泛的图（如社交网络）上对局部邻域结构过拟合的问题。\n\n2. **实验数据集**：使用了三个引文网络数据集（Citeseer、Cora 和 Pubmed），其中每个文档有稀疏的词袋特征向量和引文链接（作为无向边处理），每个文档有一个类别标签。训练时每类仅使用20个标签，但使用所有特征向量。\n\n3. **半监督节点分类结果**：在表2中报告了分类准确率（百分比）。对于ICA方法，报告了100次随机节点顺序运行的平均准确率。其他基线方法的结果来自Planetoid论文，其中Planetoid*表示该论文中针对各数据集的最佳模型变体。\n\n4. **模型优势**：基于拉普拉斯算子的流形方法（如Zhu等人、Belkin等人、Weston等人的工作）可能因假设边仅编码节点相似性而受限；基于Skip-gram的方法则因多步流水线难以优化而受限。提出的模型能够克服这两个限制，同时在效率（以挂钟时间衡量）上与相关方法相比具有竞争力，并且能够从特征信息传播中受益。\n\n**注意**：摘录中未提供具体的准确率数值或详细的对比表格内容，因此无法给出更精确的量化结论。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 1.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "GCN.pdf",
+        "GCN.pdf",
+        "ChebNet.pdf",
+        "GCN.pdf"
+      ]
+    },
+    {
+      "question_id": "q3",
+      "question": "文档的方法论或技术方案是怎样的？",
+      "expected_answer": "",
+      "answer": "根据提供的文档摘录，可以提取出以下方法论或技术方案的相关信息：\n\n1. **图卷积网络（GCN）**（来源：GCN.pdf）：\n   - 使用**稀疏的词袋特征向量**表示文档，并将引用链接视为**无向边**，构建**二值对称邻接矩阵**。\n   - 训练时，每个类别仅使用**20个标签**，但使用**所有特征向量**。\n   - 通过**堆叠多个卷积层**来恢复丰富的卷积滤波器函数，而不局限于如切比雪夫多项式等显式参数化方法。这种模型预期能缓解**节点度分布极宽的图（如社交网络）**上的过拟合问题。\n\n2. **切比雪夫网络（ChebNet）**（来源：ChebNet.pdf）：\n   - 提出了**Chebyshev滤波器**（公式4），与文献[4]中的Spline滤波器及非参数非局部化滤波器（Non-Param）进行对比。\n   - 使用**Graclus粗化算法**（而非简单的凝聚方法）进行图粗化。\n   - 该方法克服了非参数和非局部化滤波器的局限性，并验证了模型在**文本文档**上的有效性（前提是图构建良好）。\n   - 未来方向包括：结合**图信号处理（GSP）**的新工具，以及探索该模型在**天然图结构数据**上的应用。\n\n**注意**：摘录中未提供具体的技术实现细节（如层数、激活函数、损失函数等），也未完整描述ChebNet的数学推导或实验设置。如果需要更详细的方案，建议查阅原始论文。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 1.0,
+      "num_retrieved": 5,
+      "sources": [
+        "GCN.pdf",
+        "GCN.pdf",
+        "ChebNet.pdf",
+        "ChebNet.pdf",
+        "GCN.pdf"
+      ]
+    }
+  ],
+  "config": {
+    "top_k": 5,
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "embedding_model": "BAAI/bge-small-zh-v1.5",
+    "num_questions": 3
+  },
+  "timestamp": "2026-07-01 16:59:48",
+  "elapsed_seconds": 16.8
+}

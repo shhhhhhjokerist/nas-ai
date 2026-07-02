@@ -1,0 +1,65 @@
+{
+  "retrieval": {
+    "hit_rate": 0.0,
+    "mrr": 0,
+    "precision_at_k": 0.0,
+    "recall_at_k": 0.0
+  },
+  "generation": {
+    "faithfulness": 0.0,
+    "relevance": 0.0
+  },
+  "per_question": [
+    {
+      "question_id": "q1",
+      "question": "这篇文档的主要主题是什么？",
+      "expected_answer": "",
+      "answer": "未找到相关文档内容，无法回答该问题。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 0,
+      "sources": []
+    },
+    {
+      "question_id": "q2",
+      "question": "文档中提到了哪些关键发现或结论？",
+      "expected_answer": "",
+      "answer": "未找到相关文档内容，无法回答该问题。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 0,
+      "sources": []
+    },
+    {
+      "question_id": "q3",
+      "question": "文档的方法论或技术方案是怎样的？",
+      "expected_answer": "",
+      "answer": "未找到相关文档内容，无法回答该问题。",
+      "hit": false,
+      "reciprocal_rank": null,
+      "precision": 0.0,
+      "recall": 0.0,
+      "faithfulness": 0.0,
+      "relevance": 0.0,
+      "num_retrieved": 0,
+      "sources": []
+    }
+  ],
+  "config": {
+    "top_k": 5,
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "embedding_model": "BAAI/bge-small-zh-v1.5",
+    "num_questions": 3
+  },
+  "timestamp": "2026-07-01 14:58:59",
+  "elapsed_seconds": 12.7
+}

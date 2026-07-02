@@ -215,6 +215,46 @@ def copy_file_tool(source_name: str, destination_folder: str, new_name: str = ""
         )
 
 
+@tool
+def search_documents_tool(query: str, limit: int = 5) -> str:
+    """Search local documents (PDF, Word, txt, markdown) for relevant information.
+    Use this when the user asks about knowledge, papers, reports, notes, or any
+    topic that might be covered in their document collection.  Returns relevant
+    text excerpts with source file information and relevance scores.
+    """
+    from app.services.retrieval_service import RetrievalService
+
+    retrieval = RetrievalService()
+    hits = retrieval.search(query, top_k=limit)
+
+    if not hits:
+        return _json(
+            {
+                "ok": True,
+                "query": query,
+                "count": 0,
+                "results": [],
+                "message": "No relevant documents found.",
+            }
+        )
+
+    return _json(
+        {
+            "ok": True,
+            "query": query,
+            "count": len(hits),
+            "results": [
+                {
+                    "source": h["metadata"].get("file_name", "unknown"),
+                    "text": h["text"],
+                    "relevance": round(h.get("score", 0), 4),
+                }
+                for h in hits
+            ],
+        }
+    )
+
+
 TOOLS = [
     search_files_tool,
     get_play_url_tool,
@@ -223,6 +263,7 @@ TOOLS = [
     get_folder_info_tool,
     move_file_tool,
     copy_file_tool,
+    search_documents_tool,
 ]
 TOOL_MAP = {tool_obj.name: tool_obj for tool_obj in TOOLS}
 
@@ -232,11 +273,10 @@ class State(TypedDict):
 
 
 def _build_llm() -> ChatOpenAI:
-    # models: glm-4.7-flash, glm-4-flashx-250414
-    model = os.getenv("AGENT_MODEL", "glm-4-flashx-250414")
-    base_url = os.getenv("AGENT_BASE_URL", "https://open.bigmodel.cn/api/paas/v4/")
-    # api_key = os.getenv("AGENT_API_KEY") or os.getenv("ZHIPUAI_API_KEY") or os.getenv("OPENAI_API_KEY") or ""
-    api_key = "1f4222091d444ac992fd951a6cafa7eb.8H3I5Sy1Xw1b8K7B"
+    # DeepSeek models: deepseek-chat (V3), deepseek-reasoner (R1)
+    model = os.getenv("AGENT_MODEL", "deepseek-v4-flash")
+    base_url = os.getenv("AGENT_BASE_URL", "https://api.deepseek.com/v1")
+    api_key = os.getenv("AGENT_API_KEY") or os.getenv("DEEPSEEK_API_KEY") or "sk-b075029e17b343cc9bda000d78f955a8"
     return ChatOpenAI(
         model=model,
         base_url=base_url,

@@ -1,4 +1,6 @@
 # app/agents/router.py
+from __future__ import annotations
+
 import json
 import re
 
@@ -41,15 +43,17 @@ SYSTEM_PROMPT_TEMPLATE = """
 4. 移动文件或文件夹
 5. 复制文件或文件夹
 6. 搜索文件
+7. 搜索本地文档知识库（PDF、Word、txt、markdown），获取文档中的知识和信息
 
 要求：
 1. 能用工具时必须调用工具，不要臆造路径和 URL。
 2. 工具参数中的 base_url 必须使用: {base_url}
-3. response 文本不要包含任何 http/https URL、不要使用 markdown 链接，按钮交互由前端根据 data 渲染。
-4. 最终回答必须是 JSON（不要 markdown 代码块），格式：
+3. 当用户询问知识类问题、论文内容、文档摘要等时，优先使用 search_documents_tool 搜索本地文档。
+4. response 文本不要包含任何 http/https URL、不要使用 markdown 链接，按钮交互由前端根据 data 渲染。
+5. 最终回答必须是 JSON（不要 markdown 代码块），格式：
 {{
   "response": "给用户看的自然语言回复",
-  "action": "play|download|file_info|folder_info|move|search|chat",
+  "action": "play|download|file_info|folder_info|move|search|document_search|chat",
   "data": {{}}
 }}
 """.strip()
@@ -102,6 +106,8 @@ def _detect_action(action: Optional[str], message: str, response: str) -> Option
         return "file_info"
     if any(k in text for k in ["搜索", "查找", "找", "search"]):
         return "search"
+    if any(k in text for k in ["文档", "论文", "document", "知识", "摘要"]):
+        return "document_search"
     return "chat"
 
 

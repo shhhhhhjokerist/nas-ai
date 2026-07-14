@@ -18,7 +18,13 @@ class TestAuth(unittest.TestCase):
         
         # 创建所有表
         Base.metadata.create_all(bind=self.engine)
-        
+
+        login_response = self.client.post("/auth/login", json={
+            "username": "admin",
+            "password": "adminpassword"  # 假设这是 admin 的密码
+        })
+        self.access_token = login_response.json()["access_token"]
+
         # 创建测试会话
         self.TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         

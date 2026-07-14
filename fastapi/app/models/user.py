@@ -20,6 +20,9 @@ class User(Base):
     updated_at = Column(DATETIME, default=datetime.utcnow, onupdate=datetime.utcnow)
     # updated_at = Column(DATETIME, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
+    password_hash_old = Column(TEXT(128), default=None)  # 用于存储旧密码的哈希值
+
+
     def set_password(self, password):
         salt = bcrypt.gensalt()
         self.password_hash = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
@@ -47,3 +50,26 @@ class TokenBlacklist(Base):
 
     def __init__(self, jti):
         self.jti = jti
+
+class UserCreate():
+    username = Column(TEXT(50), unique=True, nullable=False)
+    email = Column(TEXT(120), unique=True, nullable=False)
+    password = Column(TEXT(128), nullable=False)
+    role = Column(TEXT(10), default='user')  # 'user' 或 'admin'
+    is_active = Column(BOOLEAN, default=True)
+
+class UserUpdateMe:
+    username = Column(TEXT(50), unique=True, nullable=False)
+    email = Column(TEXT(120), unique=True, nullable=False)
+
+
+class UserUpdatePassword:
+    old_password = Column(TEXT(128), nullable=False)
+    new_password = Column(TEXT(128), nullable=False)
+
+
+class UserUpdate:
+    username = Column(TEXT(50), unique=True, nullable=False)
+    email = Column(TEXT(120), unique=True, nullable=False)
+    role = Column(TEXT(10), default='user')  # 'user' 或 'admin'
+    is_active = Column(BOOLEAN, default=True)

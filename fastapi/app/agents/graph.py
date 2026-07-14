@@ -276,7 +276,7 @@ def _build_llm() -> ChatOpenAI:
     # DeepSeek models: deepseek-chat (V3), deepseek-reasoner (R1)
     model = os.getenv("AGENT_MODEL", "deepseek-v4-flash")
     base_url = os.getenv("AGENT_BASE_URL", "https://api.deepseek.com/v1")
-    api_key = os.getenv("AGENT_API_KEY") or os.getenv("DEEPSEEK_API_KEY") or ""
+    api_key = os.getenv("AGENT_API_KEY") or os.getenv("DEEPSEEK_API_KEY") or "sk-fd4a7806d4814bd581cf851254256328"
     return ChatOpenAI(
         model=model,
         base_url=base_url,

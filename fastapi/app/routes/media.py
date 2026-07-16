@@ -1,398 +1,396 @@
+"""
+File management routes — browse, search, upload, download, play, CRUD.
+All endpoints require authentication.  Users can only access files they
+own or that are marked public.
+"""
 import datetime
 import mimetypes
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form, Query
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
-from app.models.media import FileNode, Media
-from app.services.scanner import FileScanner
-from app.services.media_service import copy_node, move_node, search_nodes, serialize_node
-from app.config import Config
+
+from app.config import get_settings
 from app.db import get_db
+from app.deps import SessionDep, get_current_user
+from app.models.media import FileNode, Media
+from app.models.user import User
+from app.schemas.media import (
+    CreateFolderRequest,
+    DeleteRequest,
+    MoveRequest,
+    CopyRequest,
+    RenameRequest,
+    ScanRequest,
+)
+from app.services.media_service import (
+    copy_node,
+    delete_node,
+    move_node,
+    rename_node,
+    search_nodes,
+    serialize_node,
+)
 
 router = APIRouter(prefix="/media", tags=["media"])
 
-# Pydantic models
-class FileNodeResponse(BaseModel):
-    id: int
-    name: str
-    path: str
-    abs_path: str
-    parent_id: Optional[int]
-    is_directory: bool
-    size: int
-    file_type: Optional[str]
-    mime_type: Optional[str]
-    created_at: datetime.datetime
-    is_deleted: bool
 
-    class Config:
-        from_attributes = True
+# ═══════════════════════════════════════════════════════════════════
+#  Permission helpers
+# ═══════════════════════════════════════════════════════════════════
 
-class MediaResponse(BaseModel):
-    id: int
-    title: str
-    file_path: str
-
-class ScanRequest(BaseModel):
-    media_root: Optional[str] = None
-
-class CreateFolderRequest(BaseModel):
-    parent_id: Optional[int] = None
-    name: str
-
-class RenameRequest(BaseModel):
-    id: int
-    new_name: str
-
-class DeleteRequest(BaseModel):
-    id: int
-    permanent: bool = True
+def _get_node_or_404(
+    session: Session,
+    node_id: int,
+    user: User,
+) -> FileNode:
+    """Return the node, or 404 if not found or not visible to *user*."""
+    node = session.get(FileNode, node_id)
+    if not node or node.is_deleted:
+        raise HTTPException(status_code=404, detail="File not found")
+    if node.owner_id is not None and node.owner_id != user.id and node.visibility != "public":
+        raise HTTPException(status_code=404, detail="File not found")
+    return node
 
 
-class MoveRequest(BaseModel):
-    id: int
-    destination_id: int
+def _visible_query(session: Session, user: User):
+    """Base query for nodes visible to *user*."""
+    return (
+        session.query(FileNode)
+        .filter(FileNode.is_deleted == False)
+        .filter(
+            or_(
+                FileNode.owner_id == user.id,
+                FileNode.visibility == "public",
+                FileNode.owner_id == None,  # legacy / unscanned
+            )
+        )
+    )
 
 
-class CopyRequest(BaseModel):
-    id: int
-    destination_id: int
-    new_name: Optional[str] = None
+# ═══════════════════════════════════════════════════════════════════
+#  Endpoints
+# ═══════════════════════════════════════════════════════════════════
 
-@router.get("/", response_model=List[MediaResponse])
-async def list_media(session: Session = Depends(get_db)):
-    data = session.query(Media).all()
-    return data
+@router.get("/")
+async def list_media(
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    return session.query(Media).all()
+
 
 @router.post("/scan")
-async def scan_files(request: ScanRequest, session: Session = Depends(get_db)):
-    try:
-        media_root = request.media_root or Config.MEDIA_DIR
-        scanner = FileScanner(media_root, session)
-        result = scanner.scan_and_sync()
-        return {"msg": "scan_complete", "scanned": result['scanned'], "deleted": result['deleted']}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"scan_failed: {str(e)}")
+async def scan_files(
+    request: ScanRequest,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    settings = get_settings()
+    media_root = request.media_root or settings.MEDIA_DIR
+    if not media_root:
+        raise HTTPException(status_code=400, detail="MEDIA_DIR not configured")
+
+    from app.services.scanner import FileScanner
+
+    scanner = FileScanner(media_root, session)
+    result = scanner.scan_and_sync()
+    return {
+        "msg": "scan_complete",
+        "scanned": result["scanned"],
+        "deleted": result["deleted"],
+    }
+
 
 @router.get("/browse")
 async def browse_files(
-    path: Optional[str] = Query(None),
+    session: SessionDep,
     parent_id: Optional[int] = Query(None),
-    session: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user),
 ):
-    try:
-        if parent_id:
-            parent_node = session.query(FileNode).get(parent_id)
-            if not parent_node or not parent_node.is_directory:
-                raise HTTPException(status_code=400, detail="invalid parent_id")
-            nodes = session.query(FileNode).filter_by(parent_id=parent_id, is_deleted=False).all()
-            current_path = parent_node.path
-        else:
-            nodes = session.query(FileNode).filter_by(parent_id=None, is_deleted=False).all()
-            current_path = '/'
+    if parent_id:
+        parent = _get_node_or_404(session, parent_id, current_user)
+        if not parent.is_directory:
+            raise HTTPException(status_code=400, detail="Not a directory")
+        nodes = (
+            _visible_query(session, current_user)
+            .filter(FileNode.parent_id == parent_id)
+            .all()
+        )
+        current_path = parent.path
+    else:
+        nodes = (
+            _visible_query(session, current_user)
+            .filter(FileNode.parent_id == None)
+            .all()
+        )
+        current_path = "/"
 
-        folders = [serialize_node(node) for node in nodes if node.is_directory]
-        files = [serialize_node(node) for node in nodes if not node.is_directory]
-        return {
-            "current_path": current_path,
-            "folders": folders,
-            "files": files
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"browse_failed: {str(e)}")
+    folders = [serialize_node(n) for n in nodes if n.is_directory]
+    files = [serialize_node(n) for n in nodes if not n.is_directory]
+    return {"current_path": current_path, "folders": folders, "files": files}
 
-@router.get("/info", response_model=FileNodeResponse)
+
+@router.get("/info")
 async def get_file_info(
+    session: SessionDep,
     id: Optional[int] = Query(None),
     path: Optional[str] = Query(None),
-    session: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user),
 ):
-    try:
-        if id:
-            node = session.query(FileNode).get(id)
-        elif path:
-            node = session.query(FileNode).filter_by(path=path, is_deleted=False).first()
-            if not node:
-                raise HTTPException(status_code=404, detail="file not found")
-        else:
-            raise HTTPException(status_code=400, detail="missing id or path parameter")
-        return serialize_node(node)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"get_file_info_failed: {str(e)}")
-
-@router.post("/create-folder", response_model=FileNodeResponse)
-async def create_folder(request: CreateFolderRequest, session: Session = Depends(get_db)):
-    if not request.name:
-        raise HTTPException(status_code=400, detail="missing folder name")
-
-    try:
-        parent = session.query(FileNode).get(request.parent_id) if request.parent_id else None
-
-        if parent:
-            parent_path = Path(parent.abs_path)
-            new_path = parent_path / request.name
-            relative_path = str(new_path.relative_to(Config.MEDIA_DIR))
-        else:
-            new_path = Config.MEDIA_DIR / request.name
-            relative_path = request.name
-
-        os.makedirs(new_path, exist_ok=True)
-
-        new_folder = FileNode(
-            name=request.name,
-            path=relative_path,
-            abs_path=str(new_path.resolve()),
-            parent_id=request.parent_id,
-            is_directory=True,
-            size=0,
-            created_at=datetime.datetime.now(datetime.timezone.utc)
+    if id:
+        node = _get_node_or_404(session, id, current_user)
+    elif path:
+        node = (
+            _visible_query(session, current_user)
+            .filter(FileNode.path == path)
+            .first()
         )
+        if not node:
+            raise HTTPException(status_code=404, detail="File not found")
+    else:
+        raise HTTPException(status_code=400, detail="Missing id or path parameter")
+    return serialize_node(node)
 
-        session.add(new_folder)
-        session.commit()
-        session.refresh(new_folder)
-        return new_folder
 
-    except FileExistsError:
-        raise HTTPException(status_code=400, detail="folder already exists")
-    except Exception as e:
-        session.rollback()
-        raise HTTPException(status_code=500, detail=f"create_folder_failed: {str(e)}")
+@router.post("/create-folder")
+async def create_folder(
+    request: CreateFolderRequest,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    if not request.name:
+        raise HTTPException(status_code=400, detail="Missing folder name")
 
-@router.post("/upload", response_model=FileNodeResponse)
+    settings = get_settings()
+    media_dir = Path(settings.MEDIA_DIR)
+
+    parent = session.get(FileNode, request.parent_id) if request.parent_id else None
+
+    if parent:
+        parent_path = Path(parent.abs_path)
+        new_path = parent_path / request.name
+        relative_path = str((Path(parent.path) / request.name).as_posix())
+    else:
+        new_path = media_dir / request.name
+        relative_path = request.name
+
+    if new_path.exists():
+        raise HTTPException(status_code=400, detail="Folder already exists")
+
+    new_path.mkdir(parents=True, exist_ok=True)
+
+    folder = FileNode(
+        name=request.name,
+        path=relative_path,
+        abs_path=str(new_path.resolve()),
+        parent_id=request.parent_id,
+        is_directory=True,
+        size=0,
+        owner_id=current_user.id,
+        visibility="private",
+    )
+    session.add(folder)
+    session.commit()
+    session.refresh(folder)
+    return serialize_node(folder)
+
+
+@router.post("/upload")
 async def upload_file(
+    session: SessionDep,
     file: UploadFile = File(...),
     parent_id: Optional[int] = Form(None),
-    session: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user),
 ):
-    try:
-        parent = session.query(FileNode).get(parent_id) if parent_id else None
+    parent = session.get(FileNode, parent_id) if parent_id else None
 
-        if parent:
-            save_dir = Path(parent.abs_path)
-            relative_path = Path(parent.path) / file.filename
-        else:
-            save_dir = Path(Config.MEDIA_DIR)
-            relative_path = file.filename
+    if parent:
+        save_dir = Path(parent.abs_path)
+        relative_path = str((Path(parent.path) / file.filename).as_posix())
+    else:
+        settings = get_settings()
+        save_dir = Path(settings.MEDIA_DIR)
+        relative_path = file.filename
 
-        save_dir.mkdir(parents=True, exist_ok=True)
+    save_dir.mkdir(parents=True, exist_ok=True)
 
-        file_path = save_dir / file.filename
-        with open(file_path, "wb") as buffer:
-            content = await file.read()
-            buffer.write(content)
+    file_path = save_dir / file.filename
+    content = await file.read()
+    with open(file_path, "wb") as buffer:
+        buffer.write(content)
 
-        new_file = FileNode(
-            name=file.filename,
-            path=str(relative_path),
-            abs_path=str(file_path.resolve()),
-            parent_id=parent_id,
-            is_directory=False,
-            size=file_path.stat().st_size,
-            file_type=Path(file.filename).suffix.lower().lstrip('.'),
-            mime_type=file.content_type,
-            created_at=datetime.datetime.now(datetime.timezone.utc)
-        )
+    new_file = FileNode(
+        name=file.filename,
+        path=relative_path,
+        abs_path=str(file_path.resolve()),
+        parent_id=parent_id,
+        is_directory=False,
+        size=file_path.stat().st_size,
+        file_type=Path(file.filename).suffix.lower().lstrip("."),
+        mime_type=file.content_type,
+        owner_id=current_user.id,
+        visibility="private",
+    )
+    session.add(new_file)
+    session.commit()
+    session.refresh(new_file)
+    return serialize_node(new_file)
 
-        session.add(new_file)
-        session.commit()
-        session.refresh(new_file)
-        return new_file
-    except Exception as e:
-        session.rollback()
-        raise HTTPException(status_code=500, detail=f"upload_failed: {str(e)}")
 
 @router.get("/download/{file_id}")
-async def download_file(file_id: int, session: Session = Depends(get_db)):
-    try:
-        file_node = session.query(FileNode).get(file_id)
-        if not file_node or file_node.is_directory:
-            raise HTTPException(status_code=404, detail="file not found")
+async def download_file(
+    file_id: int,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    node = _get_node_or_404(session, file_id, current_user)
+    if node.is_directory:
+        raise HTTPException(status_code=400, detail="Cannot download a directory")
+    if not os.path.exists(node.abs_path):
+        raise HTTPException(status_code=404, detail="File not found on disk")
 
-        if not os.path.exists(file_node.abs_path):
-            raise HTTPException(status_code=404, detail="file not found on disk")
-
-        return FileResponse(
-            path=file_node.abs_path,
-            filename=file_node.name,
-            media_type='application/octet-stream'
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"download_failed: {str(e)}")
+    return FileResponse(
+        path=node.abs_path,
+        filename=node.name,
+        media_type="application/octet-stream",
+    )
 
 
 @router.get("/play/{file_id}")
-async def play_media(file_id: int, session: Session = Depends(get_db)):
+async def play_media(
+    file_id: int,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    node = _get_node_or_404(session, file_id, current_user)
+    if node.is_directory:
+        raise HTTPException(status_code=400, detail="Cannot play a directory")
+    if not os.path.exists(node.abs_path):
+        raise HTTPException(status_code=404, detail="File not found on disk")
+
+    media_type = (
+        node.mime_type
+        or mimetypes.guess_type(node.name)[0]
+        or "application/octet-stream"
+    )
+    return FileResponse(
+        path=node.abs_path,
+        filename=node.name,
+        media_type=media_type,
+        headers={"Accept-Ranges": "bytes"},
+    )
+
+
+@router.put("/rename")
+async def rename_file(
+    request: RenameRequest,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    node = _get_node_or_404(session, request.id, current_user)
     try:
-        file_node = session.query(FileNode).get(file_id)
-        if not file_node or file_node.is_directory:
-            raise HTTPException(status_code=404, detail="file not found")
-
-        if not os.path.exists(file_node.abs_path):
-            raise HTTPException(status_code=404, detail="file not found on disk")
-
-        media_type = file_node.mime_type or mimetypes.guess_type(file_node.name)[0] or "application/octet-stream"
-        return FileResponse(
-            path=file_node.abs_path,
-            filename=file_node.name,
-            media_type=media_type,
-            headers={"Accept-Ranges": "bytes"},
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"play_failed: {str(e)}")
-
-@router.put("/rename", response_model=FileNodeResponse)
-async def rename_file(request: RenameRequest, session: Session = Depends(get_db)):
-    if not request.id or not request.new_name:
-        raise HTTPException(status_code=400, detail="missing id or new_name parameter")
-
-    try:
-        node = session.query(FileNode).get(request.id)
-        old_path = Path(node.abs_path)
-        new_path = old_path.parent / request.new_name
-
-        if new_path.exists():
-            raise HTTPException(status_code=400, detail="a file with the new name already exists")
-
-        os.rename(old_path, new_path)
-
-        node.name = request.new_name
-        node.path = str(Path(node.path).parent / request.new_name)
-        node.abs_path = str(new_path.resolve())
-
-        if node.is_directory:
-            old_prefix = node.path
-            new_prefix = str(Path(node.path).parent / request.new_name)
-
-            child_nodes = session.query(FileNode).filter(FileNode.path.startswith(old_prefix)).all()
-
-            for child in child_nodes:
-                child.path = child.path.replace(old_prefix, new_prefix, 1)
-                child.abs_path = str(Path(child.abs_path).parent / request.new_name / Path(child.abs_path).relative_to(old_path.parent))
-
-        session.commit()
-        session.refresh(node)
-        return node
-    except Exception as e:
+        renamed = rename_node(session, node, request.new_name)
+    except ValueError as e:
         session.rollback()
-        raise HTTPException(status_code=500, detail=f"rename_failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    return serialize_node(renamed)
+
 
 @router.delete("/delete")
-async def delete_file(request: DeleteRequest, session: Session = Depends(get_db)):
-    if not request.id:
-        raise HTTPException(status_code=400, detail="missing id parameter")
-
+async def delete_file(
+    request: DeleteRequest,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
+    node = _get_node_or_404(session, request.id, current_user)
     try:
-        node = session.query(FileNode).get(request.id)
-
-        if request.permanent:
-            if os.path.exists(node.abs_path):
-                if node.is_directory:
-                    os.rmdir(node.abs_path)
-                else:
-                    os.remove(node.abs_path)
-
-            session.delete(node)
-        else:
-            node.is_deleted = True
-
-        session.commit()
-        return {"msg": "delete successful"}
-
-    except Exception as e:
+        delete_node(session, node, permanent=request.permanent)
+    except ValueError as e:
         session.rollback()
-        raise HTTPException(status_code=500, detail=f"delete_failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"msg": "delete successful"}
+
 
 @router.get("/search")
 async def search_files(
+    session: SessionDep,
     q: str = Query(..., min_length=1),
     only_directory: bool = Query(False),
     only_file: bool = Query(False),
     limit: int = Query(20, ge=1, le=100),
-    session: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    try:
-        nodes = search_nodes(
-            session=session,
-            keyword=q,
-            only_directory=only_directory,
-            only_file=only_file,
-            limit=limit,
-        )
-        return {
-            "keyword": q,
-            "count": len(nodes),
-            "results": [serialize_node(n) for n in nodes],
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"search_failed: {str(e)}")
+    nodes = search_nodes(
+        session=session,
+        keyword=q,
+        only_directory=only_directory,
+        only_file=only_file,
+        limit=limit,
+        user_id=current_user.id,
+    )
+    return {
+        "keyword": q,
+        "count": len(nodes),
+        "results": [serialize_node(n) for n in nodes],
+    }
+
 
 @router.post("/move")
-async def move_file(request: MoveRequest, session: Session = Depends(get_db)):
+async def move_file(
+    request: MoveRequest,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
     if request.id == request.destination_id:
-        raise HTTPException(status_code=400, detail="cannot move to itself")
+        raise HTTPException(status_code=400, detail="Cannot move to itself")
+
+    node = _get_node_or_404(session, request.id, current_user)
+    dest = _get_node_or_404(session, request.destination_id, current_user)
+    if not dest.is_directory:
+        raise HTTPException(status_code=400, detail="Destination must be a directory")
 
     try:
-        node = session.query(FileNode).get(request.id)
-        destination = session.query(FileNode).get(request.destination_id)
-
-        if not node:
-            raise HTTPException(status_code=404, detail="source node not found")
-        if not destination or not destination.is_directory:
-            raise HTTPException(status_code=404, detail="destination directory not found")
-
-        moved = move_node(session, node, destination)
-        return {
-            "msg": "move successful",
-            "node": serialize_node(moved),
-            "destination": serialize_node(destination),
-        }
-    except HTTPException:
-        raise
+        moved = move_node(session, node, dest)
     except ValueError as e:
         session.rollback()
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        session.rollback()
-        raise HTTPException(status_code=500, detail=f"move_failed: {str(e)}")
+
+    return {
+        "msg": "move successful",
+        "node": serialize_node(moved),
+        "destination": serialize_node(dest),
+    }
 
 
 @router.post("/copy")
-async def copy_file(request: CopyRequest, session: Session = Depends(get_db)):
+async def copy_file(
+    request: CopyRequest,
+    session: SessionDep,
+    current_user: User = Depends(get_current_user),
+):
     if request.id == request.destination_id:
-        raise HTTPException(status_code=400, detail="cannot copy to itself")
+        raise HTTPException(status_code=400, detail="Cannot copy to itself")
+
+    node = _get_node_or_404(session, request.id, current_user)
+    dest = _get_node_or_404(session, request.destination_id, current_user)
+    if not dest.is_directory:
+        raise HTTPException(status_code=400, detail="Destination must be a directory")
 
     try:
-        node = session.query(FileNode).get(request.id)
-        destination = session.query(FileNode).get(request.destination_id)
-
-        if not node:
-            raise HTTPException(status_code=404, detail="source node not found")
-        if not destination or not destination.is_directory:
-            raise HTTPException(status_code=404, detail="destination directory not found")
-
-        copied = copy_node(session, node, destination, request.new_name)
+        copied = copy_node(session, node, dest, request.new_name)
         session.commit()
         session.refresh(copied)
-        return {
-            "msg": "copy successful",
-            "node": serialize_node(copied),
-            "destination": serialize_node(destination),
-        }
-    except HTTPException:
-        raise
     except ValueError as e:
         session.rollback()
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        session.rollback()
-        raise HTTPException(status_code=500, detail=f"copy_failed: {str(e)}")
 
-
+    return {
+        "msg": "copy successful",
+        "node": serialize_node(copied),
+        "destination": serialize_node(dest),
+    }

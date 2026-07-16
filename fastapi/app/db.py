@@ -1,26 +1,27 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-# 数据库连接类
+from app.config import get_settings
 
-# 连接数据库
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-# 创建一个数据库引擎
+_settings = get_settings()
+
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    _settings.DATABASE_URL,
+    connect_args={"check_same_thread": False} if "sqlite" in _settings.DATABASE_URL else {},
 )
-# 会话类，该类本身还不是数据库会话，实例化后每个实例将是一个数据库会话
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-# 创建一个Base类
-Base = declarative_base()
 
 
-# 获取数据库连接
+class Base(DeclarativeBase):
+    """Declarative base for all ORM models."""
+    pass
+
+
 def get_db():
+    """FastAPI dependency: yields a DB session and closes it after use."""
+    db = SessionLocal()
     try:
-        db = SessionLocal()
         yield db
     finally:
         db.close()

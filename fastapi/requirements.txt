@@ -1,19 +1,21 @@
 # ── Web framework ──
 fastapi
-uvicorn
+uvicorn[standard]
 PyJWT>=2.8
-pydantic[email]
+pydantic[email]>=2.0
+pydantic-settings>=2.0
+python-dotenv
 python-multipart
 
 # ── Database ──
-sqlalchemy
+sqlalchemy>=2.0
 
 # ── AI / Agent ──
 langgraph
 langchain-core
 langchain-openai
 
-# ── RAG (new) ──
+# ── RAG ──
 sentence-transformers>=2.7.0
 chromadb>=0.5.0
 pymupdf>=1.23.0

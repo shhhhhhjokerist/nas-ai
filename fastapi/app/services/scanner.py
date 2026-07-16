@@ -2,10 +2,11 @@ import datetime
 import mimetypes
 import os
 from pathlib import Path
-from tkinter import Image
+
 from sqlalchemy import select
+
 from app.models.media import FileNode, Media
-from app.db import Base, get_db
+from app.db import Base
 
 MEDIA_EXTENSIONS = ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm', '.m4v']
 

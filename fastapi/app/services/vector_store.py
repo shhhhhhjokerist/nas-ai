@@ -127,15 +127,16 @@ class DocumentIndexer:
         vector_store: VectorStore | None = None,
         embedding_service=None,
     ):
-        from app.config import Config
+        from app.config import get_settings
 
         self.session: Session = session
-        self.root_path = Path(root_path or Config.MEDIA_DIR).resolve()
-        self.vector_store = vector_store or VectorStore(persist_dir=Config.CHROMA_DB_DIR)
+        settings = get_settings()
+        self.root_path = Path(root_path or settings.MEDIA_DIR).resolve()
+        self.vector_store = vector_store or VectorStore(persist_dir=settings.CHROMA_DB_DIR)
         self.embedding_service = embedding_service
 
-        self.chunk_size = Config.CHUNK_SIZE
-        self.chunk_overlap = Config.CHUNK_OVERLAP
+        self.chunk_size = settings.CHUNK_SIZE
+        self.chunk_overlap = settings.CHUNK_OVERLAP
 
     # ── helpers ──────────────────────────────────────────────────────────────
 

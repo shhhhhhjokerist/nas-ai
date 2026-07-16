@@ -46,8 +46,8 @@ def get_embedding_service(model_name: str = None) -> EmbeddingService:
     """
     global _embedding_service
     if _embedding_service is None:
-        from app.config import Config
+        from app.config import get_settings
 
-        name = model_name or Config.EMBEDDING_MODEL_NAME
+        name = model_name or get_settings().EMBEDDING_MODEL_NAME
         _embedding_service = EmbeddingService(model_name=name)
     return _embedding_service

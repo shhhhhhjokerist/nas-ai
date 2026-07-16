@@ -1,75 +1,61 @@
 from datetime import datetime, timezone
 
 import bcrypt
-
-from sqlalchemy import Column, TEXT, INT, BIGINT, DATETIME, INTEGER, BOOLEAN, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from app.db import Base
 
+
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
-    id = Column(INTEGER, primary_key=True)
-    username = Column(TEXT(50), unique=True, nullable=False)
-    email = Column(TEXT(120), unique=True, nullable=False)
-    password_hash = Column(TEXT(128), nullable=False)
-    role = Column(TEXT(10), default='user')  # 'user' 或 'admin'
-    is_active = Column(BOOLEAN, default=True)
-    created_at = Column(DATETIME, default=datetime.utcnow)
-    # created_at = Column(DateTime, default=datetime.now(timezone.utc))
-    updated_at = Column(DATETIME, default=datetime.utcnow, onupdate=datetime.utcnow)
-    # updated_at = Column(DATETIME, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True, nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    password_hash = Column(String(128), nullable=False)
+    role = Column(String(10), default="user")  # "user" or "admin"
+    is_active = Column(Boolean, default=True)
 
-    password_hash_old = Column(TEXT(128), default=None)  # 用于存储旧密码的哈希值
+    # ── File system config ──
+    # User's natural-language description of their file organisation framework:
+    # naming conventions, directory structure, categorisation rules, etc.
+    # This is injected into the agent's system prompt on every chat call.
+    file_system_config = Column(Text, default="")
 
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
-    def set_password(self, password):
+    password_hash_old = Column(String(128), default=None)
+
+    def set_password(self, password: str):
         salt = bcrypt.gensalt()
-        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
+        self.password_hash = bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
 
-    def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
-    
-    def to_dict(self):
+    def check_password(self, password: str) -> bool:
+        return bcrypt.checkpw(password.encode("utf-8"), self.password_hash.encode("utf-8"))
+
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "username": self.username,
             "email": self.email,
             "role": self.role,
             "is_active": self.is_active,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat()
+            "file_system_config": self.file_system_config,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
-    
+
+
 class TokenBlacklist(Base):
-    __tablename__ = 'token_blacklist'
+    __tablename__ = "token_blacklist"
 
-    id = Column(INT, primary_key=True)
-    jti = Column(TEXT(36), unique=True, nullable=False)
-    created_at = Column(TEXT, default=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    jti = Column(String(36), unique=True, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    def __init__(self, jti):
+    def __init__(self, jti: str):
         self.jti = jti
-
-class UserCreate():
-    username = Column(TEXT(50), unique=True, nullable=False)
-    email = Column(TEXT(120), unique=True, nullable=False)
-    password = Column(TEXT(128), nullable=False)
-    role = Column(TEXT(10), default='user')  # 'user' 或 'admin'
-    is_active = Column(BOOLEAN, default=True)
-
-class UserUpdateMe:
-    username = Column(TEXT(50), unique=True, nullable=False)
-    email = Column(TEXT(120), unique=True, nullable=False)
-
-
-class UserUpdatePassword:
-    old_password = Column(TEXT(128), nullable=False)
-    new_password = Column(TEXT(128), nullable=False)
-
-
-class UserUpdate:
-    username = Column(TEXT(50), unique=True, nullable=False)
-    email = Column(TEXT(120), unique=True, nullable=False)
-    role = Column(TEXT(10), default='user')  # 'user' 或 'admin'
-    is_active = Column(BOOLEAN, default=True)

@@ -1,48 +1,61 @@
+"""
+Application configuration via pydantic-settings.
+All values can be overridden by environment variables or a .env file.
+"""
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+from pathlib import Path
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings
 
 
-class Config:
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+class Settings(BaseSettings):
+    # ── App ──
+    APP_NAME: str = "NAS-AI"
+    DEBUG: bool = False
 
-    MEDIA_DIR = os.environ.get('MEDIA_DIR') or 'F:\\movies'   # NAS 主目录
+    # ── Database ──
+    DATABASE_URL: str = "sqlite:///./test.db"
 
-    # ── RAG / Document Indexing ──
-    # 文档扫描复用 MEDIA_DIR（NAS 主目录），不再单独设置 DOCUMENTS_DIR
-    CHROMA_DB_DIR = os.environ.get('CHROMA_DB_DIR') or \
-        os.path.join(os.path.dirname(basedir), 'chroma_db')
-    EMBEDDING_MODEL_NAME = os.environ.get('EMBEDDING_MODEL') or 'BAAI/bge-small-zh-v1.5'
-    CHUNK_SIZE = int(os.environ.get('CHUNK_SIZE') or '500')
-    CHUNK_OVERLAP = int(os.environ.get('CHUNK_OVERLAP') or '50')
-    RETRIEVAL_TOP_K = int(os.environ.get('RETRIEVAL_TOP_K') or '5')
+    # ── JWT ──
+    JWT_SECRET_KEY: str = "change-me-in-production-use-a-strong-secret"
+    JWT_ACCESS_TOKEN_EXPIRES: int = 24 * 60 * 60       # 24 hours
+    JWT_REFRESH_TOKEN_EXPIRES: int = 30 * 24 * 60 * 60  # 30 days
 
-    @staticmethod
-    def init_app(app):
-        pass
+    # ── NAS / Media ──
+    MEDIA_DIR: str = ""  # NAS root — MUST be set in .env / env
+
+    # ── RAG / ChromaDB ──
+    CHROMA_DB_DIR: str = ""
+    EMBEDDING_MODEL_NAME: str = "BAAI/bge-small-zh-v1.5"
+    CHUNK_SIZE: int = 500
+    CHUNK_OVERLAP: int = 50
+    RETRIEVAL_TOP_K: int = 5
+
+    # ── AI Agent (DeepSeek / OpenAI-compatible) ──
+    AGENT_MODEL: str = "deepseek-v4-flash"
+    AGENT_BASE_URL: str = "https://api.deepseek.com/v1"
+    AGENT_API_KEY: str = ""  # MUST be set in .env / env
+    AGENT_TEMPERATURE: float = 0.2
+    AGENT_MAX_TOKENS: int = 1024
+
+    # ── App base URL (for building file URLs returned by agent) ──
+    AGENT_BASE_APP_URL: str = "http://127.0.0.1:8000"
+
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True,
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Compute CHROMA_DB_DIR default relative to the fastapi/ dir
+        if not self.CHROMA_DB_DIR:
+            fastapi_dir = Path(__file__).resolve().parent.parent
+            self.CHROMA_DB_DIR = str(fastapi_dir / "chroma_db")
 
 
-class DevelopmentConfig(Config):
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
-
-
-class TestingConfig(Config):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-        'sqlite://'
-
-
-class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-
-
-config = {
-    'development': DevelopmentConfig,
-    'testing': TestingConfig,
-    'production': ProductionConfig,
-    'default': DevelopmentConfig
-}
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()

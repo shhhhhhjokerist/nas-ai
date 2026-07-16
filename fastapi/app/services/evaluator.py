@@ -128,7 +128,9 @@ class Evaluator:
             faithfulness_sum += qr.get("faithfulness", 0)
             relevance_sum += qr.get("relevance", 0)
 
-        from app.config import Config
+        from app.config import get_settings
+
+        settings = get_settings()
 
         return EvaluationResult(
             retrieval=RetrievalMetrics(
@@ -146,9 +148,9 @@ class Evaluator:
             per_question=per_question,
             config={
                 "top_k": top_k,
-                "chunk_size": Config.CHUNK_SIZE,
-                "chunk_overlap": Config.CHUNK_OVERLAP,
-                "embedding_model": Config.EMBEDDING_MODEL_NAME,
+                "chunk_size": settings.CHUNK_SIZE,
+                "chunk_overlap": settings.CHUNK_OVERLAP,
+                "embedding_model": settings.EMBEDDING_MODEL_NAME,
                 "num_questions": n,
                 "labeled_questions": len(labeled),
                 "note": (

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.config import Config
+from app.config import get_settings
 
 
 class RetrievalService:
@@ -24,7 +24,7 @@ class RetrievalService:
             return self._vector_store
         from app.services.vector_store import VectorStore
 
-        self._vector_store = VectorStore(persist_dir=Config.CHROMA_DB_DIR)
+        self._vector_store = VectorStore(persist_dir=get_settings().CHROMA_DB_DIR)
         return self._vector_store
 
     @property
@@ -61,7 +61,7 @@ class RetrievalService:
             Each hit: ``{id, text, metadata, distance, score}``
             where *score* = 1 − cosine-distance.
         """
-        k = top_k or Config.RETRIEVAL_TOP_K
+        k = top_k or get_settings().RETRIEVAL_TOP_K
 
         query_vec = self.embedding_service.embed_query(query)
 

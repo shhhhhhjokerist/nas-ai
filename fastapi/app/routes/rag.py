@@ -1,15 +1,14 @@
 """RAG query endpoints — retrieval-only and full ask (retrieve + generate)."""
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.deps import get_current_user
+from app.models.user import User
 from app.services.rag_service import RAGService
 from app.services.retrieval_service import RetrievalService
 
 router = APIRouter(prefix="/rag", tags=["rag"])
 
-
-# ── Pydantic schemas ─────────────────────────────────────────────────────────
 
 class RAGQueryRequest(BaseModel):
     query: str
@@ -28,10 +27,11 @@ class RAGAskResponse(BaseModel):
     sources: list[dict]
 
 
-# ── Routes ───────────────────────────────────────────────────────────────────
-
 @router.post("/query", response_model=RetrievalResponse)
-async def rag_query(request: RAGQueryRequest):
+async def rag_query(
+    request: RAGQueryRequest,
+    current_user: User = Depends(get_current_user),
+):
     """Retrieve relevant document chunks (retrieval only, no generation)."""
     retrieval = RetrievalService()
     hits = retrieval.search(request.query, top_k=request.top_k)
@@ -51,7 +51,10 @@ async def rag_query(request: RAGQueryRequest):
 
 
 @router.post("/ask", response_model=RAGAskResponse)
-async def rag_ask(request: RAGQueryRequest):
+async def rag_ask(
+    request: RAGQueryRequest,
+    current_user: User = Depends(get_current_user),
+):
     """Full RAG: retrieve context and generate an answer from the LLM."""
     try:
         rag = RAGService()
